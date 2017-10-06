@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-12">
+        {% if error %}
+        <p>Hubo un error en la instalación, puedes intentarlo de nuevo<p>
+            {% else %}
+            <h4>Descarga starsbot aquí:</h4>
+            {% endif %}
+
+            <a href="https://slack.com/oauth/authorize?scope=bot&client_id=246767461766.253456618774"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>
+
+            <br><br>
+            {% if installed %}
+            <h4>Aplicación instalada con éxito, ahora puedes usarla desde slack!.</h4>
+            {% endif %}
+    </div>
+</div>
+{% endblock %}
+
