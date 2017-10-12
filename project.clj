@@ -32,7 +32,7 @@
                  [superstring "2.1.0"]
                  [cheshire "5.8.0"]
                  [clj-http "3.7.0"]
-                 [codax "1.0.2-SNAPSHOT"]
+                 [codax "1.0.3-SNAPSHOT"]
                  [clj-time "0.14.0"]
                  [jarohen/chime "0.2.2"]
                  ]

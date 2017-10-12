@@ -26,3 +26,10 @@
 (defn subscriptions []
   (codax/get-at! db [:subscriptions]))
 
+(defn save-response-data [data]
+  (codax/assoc-at! db [:response-data] data))
+
+(defn get-response-data []
+  (codax/get-at! db [:response-data]))
+
+

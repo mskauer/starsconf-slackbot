@@ -2,19 +2,26 @@
   (:require [clj-http.client :as client]
             [venia.core :as v]
             [clojure.core.memoize :as memo]
-            [starsconf-slackbot.time :as time]))
+            [starsconf-slackbot.time :as time]
+            [starsconf-slackbot.db :as db]
+            ))
 
 
 (def GRAPHQL-URL "https://api-starsconf.synaptic.cl/graphql")
 
 
-(defn- api-request [graphql-query]
+(defn- api-request
+  "If request is successful, store response in db, else, get data from db."
+  [graphql-query]
   (let [query-body (str "{\"query\":" " \"" graphql-query "\"}")
         request (client/post GRAPHQL-URL {:body query-body
                                           :content-type :json
-                                          :as :json})]
+                                          :as :json
+                                          :throw-exceptions false})]
     (if (= (:status request) 200)
-      (-> request :body :data))))
+      (db/save-response-data (-> request :body :data))
+      (db/get-response-data)
+      )))
 
 
 (defn- all-events-request
