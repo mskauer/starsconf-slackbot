@@ -17,8 +17,9 @@
       (-> request :body :data))))
 
 
-(defn- all-events-request []
+(defn- all-events-request
   "Request all events from synaptic's api. Returns nil if the request fails."
+  []
   (let [query-fields [[:allTalks [:id
                                   :name
                                   [:speaker
@@ -44,8 +45,9 @@
     (compare e1-seconds e2-seconds)))
 
 
-(defn- sort-events-by-date [events]
+(defn- sort-events-by-date
   "Sort events by start datetime."
+  [events]
   (let [events-with-datetime
         (map (fn [event] (assoc event :datetime (event-to-datetime event)))
              events)]
@@ -59,8 +61,9 @@
     (memo/ttl #(sort-events-by-date (all-events-request)) :ttl/threshold threshold)))
 
 
-(defn all-talks []
+(defn all-talks
   "A talk is an event that is not placeholder."
+  []
   (let [events (all-events)]
     (filter (fn [event] (not (:isPlaceholder event))) events)))
 
@@ -77,8 +80,9 @@
     (filter not-empty (set categories))))
 
 
-(defn next-event-from [datetime]
+(defn next-event-from
   "Returns nearest event in time from datetime, or nil if datetime occurs after the last event."
+  [datetime]
   (loop [events (all-events)]
     (if (empty? events)
       nil
@@ -87,8 +91,9 @@
         (recur (rest events))))))
 
 
-(defn next-n-events-from [n datetime]
-  "Like next-event-from, but returns list of n events."
+(defn next-n-events-from
+  "Like next-event-from, but returns list of (at most) n events."
+  [n datetime]
   (loop [c n events (all-events) result []]
     (if (or (empty? events) (<= c 0))
       result

@@ -36,8 +36,9 @@
     (str/chop-suffix time ":00")))
 
 
-(defn parse-real-event [e]
-  "Real meaning not placeholder"
+(defn parse-real-event
+  "Real event meaning not placeholder"
+  [e]
   (str "charla " (:name e) ",de " (:speaker e "-") "\n"
        "Día " (event-to-weekday e) ", entre " (start-time e) " y " (end-time e) " hrs.\n"
        "Lugar: sala " (:room e "-") " - Categoría: " (:category e "-") "\n"
@@ -104,8 +105,9 @@
       )))
 
 
-(defn response-text [msg sender-id bot-id channel]
+(defn response-text
   "Only reply to messages that start with @<bot-id>"
+  [msg sender-id bot-id channel]
   (if (str/starts-with? (str/trim msg) bot-id)
     (str sender-id ", " (handle-msg-request msg bot-id channel))))
 

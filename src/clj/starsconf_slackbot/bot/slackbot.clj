@@ -6,8 +6,9 @@
             ))
 
 
-(defn slack-id-to-msg [user-id]
+(defn slack-id-to-msg
   "Slack's notation to identify ids in chat. E.g. 'D7ALHP8AG' -> '<@D7ALHP8AG>' "
+  [user-id]
   (str "<@" user-id ">"))
 
 
@@ -16,8 +17,9 @@
     (slack-id-to-msg id)))
 
 
-(defn should-reply-to-event [event]
+(defn should-reply-to-event
   "Ignore events that are not simple messages."
+  [event]
   (and (= (:type event) "message")
        (:user event)
        (not (:subtype event))
