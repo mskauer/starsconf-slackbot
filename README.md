@@ -10,7 +10,7 @@ Luego, se puede conversar con el bot escribiendo desde slack alguno de los mensa
 @starsbot cancelar
 ```
 
-
+Al suscribirse, se recibirá una notificación 5 minutos antes de cada charla.
 
 
 ## License
