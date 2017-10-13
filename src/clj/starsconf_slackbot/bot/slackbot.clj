@@ -5,6 +5,8 @@
             [starsconf-slackbot.bot.ai :as ai]
             ))
 
+(defonce rtm-connections (atom {}))
+
 
 (defn slack-id-to-msg
   "Slack's notation to identify ids in chat. E.g. 'D7ALHP8AG' -> '<@D7ALHP8AG>' "
@@ -26,6 +28,14 @@
        (not (:reply_to event))
        ))
 
+(defn notify-event [event channel bot-id]
+  (let [team-id (db/team-id bot-id)
+        dispatcher (:dispatcher (@rtm-connections team-id))]
+    (slack/send-event dispatcher
+                      {:type :message
+                       :channel channel
+                       :text (str "En 5 minutos: " (ai/parse-event event))})))
+
 
 (defn msg-receiver [dispatcher event team-id]
   (if (should-reply-to-event event)
@@ -40,8 +50,6 @@
                            :text response-text}
                           )))))
 
-
-(defonce rtm-connections (atom {}))
 
 (defn start-connections []
   (log/info "Starting slack rtm websocket connections...")

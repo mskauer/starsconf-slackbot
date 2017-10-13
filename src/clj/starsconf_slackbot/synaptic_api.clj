@@ -88,7 +88,8 @@
 
 
 (defn next-event-from
-  "Returns nearest event in time from datetime, or nil if datetime occurs after the last event."
+  "Returns nearest event in time from datetime, or nil if datetime occurs after
+   the last event."
   [datetime]
   (loop [events (all-events)]
     (if (empty? events)
@@ -99,7 +100,7 @@
 
 
 (defn next-n-events-from
-  "Like next-event-from, but returns list of (at most) n events."
+  "Get a list of (at most) n events starting from datetime."
   [n datetime]
   (loop [c n events (all-events) result []]
     (if (or (empty? events) (<= c 0))
@@ -108,4 +109,16 @@
         (recur (dec c) (rest events) (conj result (first events)))
         (recur c (rest events) result))
       )))
+
+
+(defn get-events-within-next-hour
+  "Get all events with [hour, hour+1]"
+  [date hour]
+  (let [events (all-events)
+        start (time/set-hour date hour)
+        filter-fn (fn [event]
+                    (time/within-next-hour? start (:datetime event)))]
+    (filter filter-fn events)))
+
+
 

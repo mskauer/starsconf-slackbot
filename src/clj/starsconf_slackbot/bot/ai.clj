@@ -68,7 +68,7 @@
 
 
 (defn subscription-message [bot-id channel]
-  (db/add-subscription channel)
+  (db/add-subscription channel (str/chop-suffix (str/chop-prefix bot-id "<@") ">"))
   (str "Has suscrito este canal a las notificaciones. Se te avisará 5 minutos antes de cada charla. Puedes cancelar escribiéndome:\n"
        bot-id " cancelar"))
 

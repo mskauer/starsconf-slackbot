@@ -7,7 +7,7 @@
 
 ;;; implementation of https://api.slack.com/docs/oauth
 
-(defn cliend-id [] (or (System/getenv "CLIENT_ID") ""))
+(defn client-id [] (or (System/getenv "CLIENT_ID") ""))
 (defn client-secret [] (or (System/getenv "CLIENT_SECRET") ""))
 
 
@@ -15,7 +15,7 @@
   (let [url-slack-auth "https://slack.com/api/oauth.access"
         response (client/get url-slack-auth
                              {:as :json
-                              :query-params {:client_id     (cliend-id)
+                              :query-params {:client_id     (client-id)
                                              :client_secret (client-secret)
                                              :code          code}})]
     response))

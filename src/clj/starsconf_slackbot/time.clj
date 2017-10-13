@@ -25,7 +25,27 @@
     (t/from-time-zone datetime TIMEZONE-SCL)))
 
 
+(defn set-hour
+  "Sets datetime's hour to hour, and minutes and seconds to zero."
+  [datetime hour]
+  (let [new-datetime (t/date-time (t/year datetime)
+                                  (t/month datetime)
+                                  (t/day datetime)
+                                  hour)]
+    (t/from-time-zone new-datetime TIMEZONE-SCL)))
+
+
 (defn equal-or-after [d1 d2]
   (or (= d1 d2)
       (t/after? d1 d2)))
+
+
+(defn within-next-hour? [start datetime]
+  (let [end      (t/plus start (t/minutes 59))
+        interval (t/interval start end)]
+    (t/within? interval datetime)))
+
+(defn minus5-minutes [datetime]
+  (t/minus datetime (t/minutes 5)))
+
 

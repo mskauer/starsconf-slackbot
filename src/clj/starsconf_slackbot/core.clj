@@ -6,7 +6,9 @@
             [clojure.tools.cli :refer [parse-opts]]
             [clojure.tools.logging :as log]
             [mount.core :as mount]
-            [starsconf-slackbot.bot.slackbot :as slackbot])
+            [starsconf-slackbot.bot.slackbot :as slackbot]
+            [starsconf-slackbot.cron :as cron]
+            )
   (:gen-class))
 
 (def cli-options
@@ -39,13 +41,14 @@
   (shutdown-agents))
 
 (defn start-app [args]
-  (slackbot/start-connections)
   (doseq [component (-> args
                         (parse-opts cli-options)
                         mount/start-with-args
                         :started)]
     (log/info component "started"))
-  (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
+  (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app))
+  (slackbot/start-connections)
+  (cron/set-notifications))
 
 (defn -main [& args]
   (start-app args))
