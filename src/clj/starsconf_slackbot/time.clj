@@ -1,6 +1,7 @@
 (ns starsconf-slackbot.time
   (:require [clj-time.core :as t]
-            [clj-time.format :as f]))
+            [clj-time.format :as f]
+            [clj-time.periodic :as p]))
 
 
 (def TIMEZONE-SCL (t/time-zone-for-offset -3))
@@ -25,16 +26,6 @@
     (t/from-time-zone datetime TIMEZONE-SCL)))
 
 
-(defn set-hour
-  "Sets datetime's hour to hour, and minutes and seconds to zero."
-  [datetime hour]
-  (let [new-datetime (t/date-time (t/year datetime)
-                                  (t/month datetime)
-                                  (t/day datetime)
-                                  hour)]
-    (t/from-time-zone new-datetime TIMEZONE-SCL)))
-
-
 (defn equal-or-after [d1 d2]
   (or (= d1 d2)
       (t/after? d1 d2)))
@@ -47,5 +38,20 @@
 
 (defn minus5-minutes [datetime]
   (t/minus datetime (t/minutes 5)))
+
+(defn plus-1-hour [datetime]
+  (t/plus datetime (t/hours 1)))
+
+(defn every-hour
+  "Infinite stream of joda datetimes of every hour starting today at 1pm"
+  []
+  (rest (p/periodic-seq (t/today-at 0 0) (t/hours 1))))
+
+(defn pretty-print
+  [datetime]
+  (str (f/unparse (f/formatters :mysql) datetime) " UTC"))
+
+(defn to-cl-timezone [datetime]
+  (t/to-time-zone datetime TIMEZONE-SCL))
 
 

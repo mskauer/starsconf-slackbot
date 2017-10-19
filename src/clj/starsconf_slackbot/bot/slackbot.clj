@@ -34,7 +34,7 @@
     (slack/send-event dispatcher
                       {:type :message
                        :channel channel
-                       :text (str "En 5 minutos: " (ai/parse-event event))})))
+                       :text (str "Próximo evento: " (ai/parse-event event))})))
 
 
 (defn msg-receiver [dispatcher event team-id]
@@ -75,10 +75,11 @@
 
 (defn new-connection [team]
   (log/info "New connection:" (:team_id team))
-  (let [connection (slack/connect (-> team :bot :bot_access_token))]
-    (slack/sub-to-event (:events-publication connection)
-                        :message
-                        #(msg-receiver (:dispatcher connection) % (:team_id team)))
-    (swap! rtm-connections assoc (:team_id team) connection)))
+  (if-not (contains? (db/teams) (:team_id team))
+    (let [connection (slack/connect (-> team :bot :bot_access_token))]
+      (slack/sub-to-event (:events-publication connection)
+                          :message
+                          #(msg-receiver (:dispatcher connection) % (:team_id team)))
+      (swap! rtm-connections assoc (:team_id team) connection))))
 
 

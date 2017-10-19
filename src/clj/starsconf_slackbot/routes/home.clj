@@ -3,7 +3,8 @@
             [compojure.core :refer [defroutes GET]]
             [ring.util.http-response :as response]
             [clojure.java.io :as io]
-            [starsconf-slackbot.routes.slack-oauth :as slack-routes]))
+            [starsconf-slackbot.routes.slack-oauth :as slack-routes]
+            ))
 
 
 (defn home-page [query-params]

@@ -20,11 +20,6 @@
 (defn default-message [bot-id]
   (help-message bot-id))
 
-(defn event-to-weekday [e]
-  (let [date (-> e :timeSlot :date)]
-    ({"2017-11-03" "Viernes"
-      "2017-11-04" "Sábado"} date "-")))
-
 
 (defn start-time [e]
   (let [time (-> e :timeSlot :start)]
@@ -39,15 +34,15 @@
 (defn parse-real-event
   "Real event meaning not placeholder"
   [e]
-  (str "charla " (:name e) ",de " (:speaker e "-") "\n"
-       "Día " (event-to-weekday e) ", entre " (start-time e) " y " (end-time e) " hrs.\n"
+  (str "charla \"" (:name e) "\", de " (-> e :speaker :name) "\n"
+       "Día " (-> e :timeSlot :date) ", entre " (start-time e) " y " (end-time e) " hrs.\n"
        "Lugar: sala " (:room e "-") " - Categoría: " (:category e "-") "\n"
        ))
 
 
 (defn parse-placeholder-event [e]
   (str (:name e) "\n"
-       "Día " (event-to-weekday e) ", entre " (start-time e) " y " (end-time e) " hrs.\n"
+       "Día " (-> e :timeSlot :date) ", entre " (start-time e) " y " (end-time e) " hrs.\n"
        "Lugar: sala  " (:room e "-") "\n"
        ))
 

@@ -112,12 +112,11 @@
 
 
 (defn get-events-within-next-hour
-  "Get all events with [hour, hour+1]"
-  [date hour]
+  "Get all events within [hour, hour+1]"
+  [datetime]
   (let [events (all-events)
-        start (time/set-hour date hour)
         filter-fn (fn [event]
-                    (time/within-next-hour? start (:datetime event)))]
+                    (time/within-next-hour? datetime (:datetime event)))]
     (filter filter-fn events)))
 
 
