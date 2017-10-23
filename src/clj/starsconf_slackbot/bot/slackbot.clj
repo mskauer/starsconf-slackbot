@@ -3,6 +3,7 @@
             [starsconf-slackbot.db :as db]
             [clojure.tools.logging :as log]
             [starsconf-slackbot.bot.ai :as ai]
+            [clj-http.client :as client]
             ))
 
 (defonce rtm-connections (atom {}))
@@ -36,6 +37,15 @@
                        :channel channel
                        :text (str "Próximo evento: " (ai/parse-event event))})))
 
+(defn notify-new-channel [channel bot-id]
+  (let [team-id (db/team-id bot-id)
+        dispatcher (:dispatcher (@rtm-connections team-id))
+        msg (str "Has instalado StarsConf2017Bot. Para recibir notificaciones automáticamente escribe: " (slack-id-to-msg bot-id) " suscribirse")]
+    (slack/send-event dispatcher
+                      {:type :message
+                       :channel channel
+                       :text msg})))
+
 
 (defn msg-receiver [dispatcher event team-id]
   (if (should-reply-to-event event)
@@ -53,7 +63,6 @@
 
 (defn start-connections []
   (log/info "Starting slack rtm websocket connections...")
-  (log/info "Teams ->\n" (db/teams))
   (let [teams (db/teams)
         conns (into {}
                     (for [[team-id team] teams
@@ -67,19 +76,36 @@
     (log/info "Started" (count conns) "connections.")
     ))
 
+
 (defn close-connections []
   (log/info "Closing slack rtm connections...")
   (doseq [[team-id conn] @rtm-connections]
     (log/info "Closing connection:" team-id)
     (slack/send-event (:dispatcher conn) :close)))
 
+
+(defn get-app-channels [bot-token bot-id]
+  (let [url "https://slack.com/api/im.list"
+        response (client/get url {:as :json :query-params {:token bot-token}})]
+    (if (and (= (:status response) 200) (-> response :body :ok))
+      (filter #(not= (:user %) "USLACKBOT") (-> response :body :ims))
+      )))
+
+
 (defn new-connection [team]
   (log/info "New connection:" (:team_id team))
-  (if-not (contains? (db/teams) (:team_id team))
-    (let [connection (slack/connect (-> team :bot :bot_access_token))]
+  (if-not (contains? @rtm-connections (:team_id team))
+    (let [connection (slack/connect (-> team :bot :bot_access_token))
+          msg-handler #(msg-receiver (:dispatcher connection) % (:team_id team))]
       (slack/sub-to-event (:events-publication connection)
                           :message
-                          #(msg-receiver (:dispatcher connection) % (:team_id team)))
-      (swap! rtm-connections assoc (:team_id team) connection))))
+                          msg-handler)
+      (swap! rtm-connections assoc (:team_id team) connection))
+    (log/info "Team already connected."))
+  (let [channels (get-app-channels
+                  (-> team :bot :bot_access_token)
+                  (-> team :bot :bot_user_id))]
+    (doseq [channel channels]
+      (notify-new-channel (:id channel) (-> team :bot :bot_user_id)))))
 
 

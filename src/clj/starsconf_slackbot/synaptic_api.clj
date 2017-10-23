@@ -62,9 +62,9 @@
 
 
 (def all-events
-  "Same as all-events-request, but sorts the events, caches the results for 3600 seconds
+  "Same as all-events-request, but sorts the events, caches the results for 1800 seconds
    (memo/ttl returns a function)."
-  (let [threshold (* 3600 1000)]
+  (let [threshold (* 1800 1000)]
     (memo/ttl #(sort-events-by-date (all-events-request)) :ttl/threshold threshold)))
 
 
